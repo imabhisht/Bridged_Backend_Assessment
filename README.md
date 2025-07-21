@@ -7,12 +7,9 @@ The implementation includes all core requirements and bonus features, such as a 
 
 ## Deployed on
 
-The Project is already deployed on: **bridged.imabhisht.com**
+The Project is already deployed on: **https://bridged.imabhisht.com**
 
-You can call **bridged.imabhisht.com/api-docs** to see the postman collection if you don't want to change
-
-![High Level Architecture Diagram: Shows the flow between User, API Server (NestJS), Redis, BullMQ Queue, Worker Node, and MongoDB. The diagram illustrates how requests are processed, cached, redirected, and analytics are asynchronously logged.](./docs/image.png)
-
+You can see the postman collection [here](./docs/postman.json)
 
 ## How to Run the Project (Locally)
 
@@ -20,6 +17,7 @@ You can call **bridged.imabhisht.com/api-docs** to see the postman collection if
 2. Run `./deploy.sh` to deploy the project using Docker
 3. That's it, the project will be deployed on `http://localhost:3500`
 
+![High Level Architecture Diagram: Shows the flow between User, API Server (NestJS), Redis, BullMQ Queue, Worker Node, and MongoDB. The diagram illustrates how requests are processed, cached, redirected, and analytics are asynchronously logged.](./docs/image.png)
 High Level Architecture Diagram  
 
 ## Performance Benchmarks
