@@ -16,6 +16,7 @@ import { JwtStrategy } from "./common/strategies/jwt.strategy";
 import { UserSchema } from "./infrastructure/database/schemas/user.schema";
 import { UserMongoRepository } from "./infrastructure/repositories/user-mongo.repository";
 import { AuthService } from "./application/services/auth.service";
+import { AdminController } from "./presentation/controllers/admin.controller";
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { AuthService } from "./application/services/auth.service";
       { name: "User", schema: UserSchema },
     ]),
   ],
-  controllers: [LinkController, AnalyticsController, AuthController],
+  controllers: [LinkController, AnalyticsController, AuthController, AdminController],
   providers: [
     LinkService,
     AnalyticsService,

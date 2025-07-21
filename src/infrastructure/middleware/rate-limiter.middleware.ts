@@ -12,13 +12,18 @@ export class RateLimiterMiddleware implements NestMiddleware {
   constructor(private readonly redisService: RedisService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    const ip = req.ip;
-    const key = `rate-limit:${ip}`;
+    let key: string;
+    // If authenticated, use userId for rate limiting, else use IP
+    if ((req as any).user && (req as any).user.userId) {
+      key = `rate-limit:user:${(req as any).user.userId}`;
+    } else {
+      const ip = req.ip;
+      key = `rate-limit:ip:${ip}`;
+    }
     const requests = await this.redisService.get(key);
     const count = requests ? parseInt(requests) : 0;
 
     if (count >= 100) {
-      // 100 requests per minute
       throw new HttpException(
         "Rate limit exceeded",
         HttpStatus.TOO_MANY_REQUESTS

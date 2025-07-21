@@ -45,4 +45,18 @@ export class LinkMongoRepository implements LinkRepository {
         )
     );
   }
+
+  async findAll(): Promise<Link[]> {
+    const links = await this.linkModel.find().exec();
+    return links.map(
+      (link) =>
+        new Link(
+          link.shortCode,
+          link.longUrl,
+          link.userId,
+          link.expiresAt,
+          (link as any).createdAt
+        )
+    );
+  }
 }

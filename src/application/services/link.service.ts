@@ -47,4 +47,8 @@ export class LinkService {
   async getUserLinks(userId: string): Promise<Link[]> {
     return this.linkRepository.findByUserId(userId);
   }
+
+  async findAll(): Promise<Link[]> {
+    return this.linkRepository.findAll();
+  }
 }
