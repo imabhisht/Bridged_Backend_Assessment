@@ -7,6 +7,6 @@ export const options = {
 };
 
 export default function () {
-    http.get('http://localhost:3000/abc123');
+    http.get('http://localhost:3005/mycode');
     sleep(1);
 }

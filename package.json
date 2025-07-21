@@ -35,6 +35,7 @@
 		"typescript": "^5.8.3"
 	},
 	"scripts": {
-		"start": "ts-node --compiler-options '{\"module\":\"commonjs\"}' src/main.ts"
+		"start": "ts-node --compiler-options '{\"module\":\"commonjs\"}' src/main.ts",
+		"stress-test": "k6 run k6/stress-test.js"
 	}
 }
