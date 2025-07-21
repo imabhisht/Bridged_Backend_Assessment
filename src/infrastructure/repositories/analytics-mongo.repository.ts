@@ -23,7 +23,31 @@ export class AnalyticsMongoRepository implements AnalyticsRepository {
         analytics.userAgent
       );
     }
+    
+    // Use create for single document with lean option for better performance
     await this.analyticsModel.create(analytics);
+  }
+
+  async logBulkHits(analyticsArray: (Analytics | any)[]): Promise<void> {
+    // Bulk insert for high-volume scenarios
+    const docs = analyticsArray.map(analytics => {
+      if (!(analytics instanceof Analytics)) {
+        return new Analytics(
+          analytics.shortCode,
+          analytics.timestamp ? new Date(analytics.timestamp) : new Date(),
+          analytics.referrer,
+          analytics.ipAddress,
+          analytics.country,
+          analytics.userAgent
+        );
+      }
+      return analytics;
+    });
+
+    // Use insertMany for bulk operations with ordered: false for better performance
+    await this.analyticsModel.insertMany(docs, { 
+      ordered: false
+    });
   }
 
   async getStats(shortCode: string): Promise<{
@@ -36,49 +60,68 @@ export class AnalyticsMongoRepository implements AnalyticsRepository {
     const startDate = new Date(now);
     startDate.setDate(now.getDate() - 29); // last 30 days
 
-    // Total clicks
-    const totalClicks = await this.analyticsModel.countDocuments({ shortCode });
-
-    // Clicks per day (last 30 days)
-    const dailyClicksAgg = await this.analyticsModel.aggregate([
-      { $match: { shortCode, timestamp: { $gte: startDate } } },
-      {
-        $group: {
-          _id: {
-            $dateToString: { format: "%Y-%m-%d", date: "$timestamp" },
-          },
-          count: { $sum: 1 },
-        },
-      },
-      { $sort: { _id: 1 } },
-    ]);
-    const dailyClicks = dailyClicksAgg.map((d) => ({ date: d._id, count: d.count }));
-
-    // Referrer breakdown
-    const referrersAgg = await this.analyticsModel.aggregate([
+    // Use aggregation pipeline with $facet for better performance
+    // This allows multiple aggregations in a single query
+    const pipeline: any[] = [
       { $match: { shortCode } },
       {
-        $group: {
-          _id: "$referrer",
-          count: { $sum: 1 },
+        $facet: {
+          totalClicks: [{ $count: "count" }],
+          dailyClicks: [
+            { $match: { timestamp: { $gte: startDate } } },
+            {
+              $group: {
+                _id: {
+                  $dateToString: { format: "%Y-%m-%d", date: "$timestamp" },
+                },
+                count: { $sum: 1 },
+              },
+            },
+            { $sort: { _id: 1 } },
+          ],
+          referrers: [
+            {
+              $group: {
+                _id: "$referrer",
+                count: { $sum: 1 },
+              },
+            },
+            { $sort: { count: -1 } },
+            { $limit: 20 }, // Limit top referrers for performance
+          ],
+          countries: [
+            { $match: { country: { $exists: true, $ne: null } } },
+            {
+              $group: {
+                _id: "$country",
+                count: { $sum: 1 },
+              },
+            },
+            { $sort: { count: -1 } },
+            { $limit: 20 }, // Limit top countries for performance
+          ],
         },
       },
-      { $sort: { count: -1 } },
-    ]);
-    const referrers = referrersAgg.map((r) => ({ referrer: r._id || "direct", count: r.count }));
+    ];
 
-    // Country breakdown (optional)
-    const countriesAgg = await this.analyticsModel.aggregate([
-      { $match: { shortCode, country: { $exists: true, $ne: null } } },
-      {
-        $group: {
-          _id: "$country",
-          count: { $sum: 1 },
-        },
-      },
-      { $sort: { count: -1 } },
-    ]);
-    const countries = countriesAgg.map((c) => ({ country: c._id, count: c.count }));
+    const [result] = await this.analyticsModel.aggregate(pipeline, {
+      allowDiskUse: true, // Allow using disk for large datasets
+      maxTimeMS: 30000, // 30 second timeout
+    });
+
+    const totalClicks = result.totalClicks[0]?.count || 0;
+    const dailyClicks = result.dailyClicks.map((d: any) => ({ 
+      date: d._id, 
+      count: d.count 
+    }));
+    const referrers = result.referrers.map((r: any) => ({ 
+      referrer: r._id || "direct", 
+      count: r.count 
+    }));
+    const countries = result.countries.map((c: any) => ({ 
+      country: c._id, 
+      count: c.count 
+    }));
 
     return {
       totalClicks,

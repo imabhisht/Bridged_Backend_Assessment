@@ -21,7 +21,8 @@ export class LinkMongoRepository implements LinkRepository {
   }
 
   async findByShortCode(shortCode: string): Promise<Link | null> {
-    const link = await this.linkModel.findOne({ shortCode }).exec();
+    // Use lean() for better performance - returns plain JavaScript object
+    const link = await this.linkModel.findOne({ shortCode }).lean().exec();
     if (!link) return null;
     return new Link(
       link.shortCode,
@@ -33,7 +34,14 @@ export class LinkMongoRepository implements LinkRepository {
   }
 
   async findByUserId(userId: string): Promise<Link[]> {
-    const links = await this.linkModel.find({ userId }).exec();
+    // Use lean() and limit for better performance
+    const links = await this.linkModel
+      .find({ userId })
+      .lean()
+      .sort({ createdAt: -1 }) // Sort by creation date descending
+      .limit(1000) // Reasonable limit for user links
+      .exec();
+    
     return links.map(
       (link) =>
         new Link(
@@ -47,7 +55,88 @@ export class LinkMongoRepository implements LinkRepository {
   }
 
   async findAll(): Promise<Link[]> {
-    const links = await this.linkModel.find().exec();
+    // Use lean(), pagination, and sorting for better performance
+    const links = await this.linkModel
+      .find()
+      .lean()
+      .sort({ createdAt: -1 })
+      .limit(10000) // Reasonable limit to prevent memory issues
+      .exec();
+    
+    return links.map(
+      (link) =>
+        new Link(
+          link.shortCode,
+          link.longUrl,
+          link.userId,
+          link.expiresAt,
+          (link as any).createdAt
+        )
+    );
+  }
+
+  // Add pagination support for better performance
+  async findAllPaginated(page: number = 1, limit: number = 100): Promise<{
+    links: Link[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    const skip = (page - 1) * limit;
+    
+    // Use Promise.all for parallel execution
+    const [links, total] = await Promise.all([
+      this.linkModel
+        .find()
+        .lean()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.linkModel.estimatedDocumentCount() // Faster than countDocuments for large collections
+    ]);
+
+    const mappedLinks = links.map(
+      (link) =>
+        new Link(
+          link.shortCode,
+          link.longUrl,
+          link.userId,
+          link.expiresAt,
+          (link as any).createdAt
+        )
+    );
+
+    return {
+      links: mappedLinks,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  // Bulk operations for high-volume scenarios
+  async createBulk(links: Link[]): Promise<Link[]> {
+    const createdLinks = await this.linkModel.insertMany(links, { 
+      ordered: false // Continue on error
+    });
+    
+    return createdLinks.map(link => new Link(
+      link.shortCode,
+      link.longUrl,
+      link.userId,
+      link.expiresAt,
+      (link as any).createdAt
+    ));
+  }
+
+  // Find multiple links by short codes efficiently
+  async findByShortCodes(shortCodes: string[]): Promise<Link[]> {
+    const links = await this.linkModel
+      .find({ shortCode: { $in: shortCodes } })
+      .lean()
+      .exec();
+    
     return links.map(
       (link) =>
         new Link(

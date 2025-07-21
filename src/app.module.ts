@@ -19,11 +19,13 @@ import { AuthService } from "./application/services/auth.service";
 import { AdminController } from "./presentation/controllers/admin.controller";
 import { AnalyticsQueue } from "./infrastructure/queue/analytics.queue";
 import { AnalyticsProcessor } from "./infrastructure/queue/analytics.processor";
+import { MongooseDatabaseModule } from "./infrastructure/database/mongoose.module";
+import { MongoHealthService } from "./infrastructure/database/mongo-health.service";
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_URI || ''),
+    MongooseDatabaseModule,
     MongooseModule.forFeature([
       { name: "Link", schema: LinkSchema },
       { name: "Analytics", schema: AnalyticsSchema },
@@ -42,6 +44,7 @@ import { AnalyticsProcessor } from "./infrastructure/queue/analytics.processor";
     JwtStrategy,
     AnalyticsQueue,
     AnalyticsProcessor,
+    MongoHealthService,
   ],
 })
 export class AppModule {}
