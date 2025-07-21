@@ -29,7 +29,7 @@ High Level Architecture Diagram
 ![alt text](./docs/image3.png)
 ![alt text](./docs/image-1.png)
 #### **Performance Testing Summary** (Best Results):
-> Using `k6`, I simulated over 21,000 requests in a 2.5-minute test window with 100 concurrent virtual users. The system maintained an average latency of \~137ms, with 95% of responses served under 285ms. The error rate was just 0.25%, confirming good stability under high load. This validates the API’s readiness for real-world usage patterns. Connection pooling and efficient MongoDB access patterns helped ensure consistent performance.
+> Using `k6`, I simulated over 21,000 requests in a 2.5-minute test window with 100 concurrent virtual users. The system maintained an average latency of \~137ms, with 95% of responses served under 285ms. The error rate was just 0.25%, confirming good stability under high load. This validates the API’s readiness for real-world usage patterns. Redis Caching, Connection pooling and efficient MongoDB access patterns helped ensure consistent performance.
 
 | Metric                  | Value                   | ✅ Why It’s Good                                                                      |
 | ----------------------- | ----------------------- | ------------------------------------------------------------------------------------ |
