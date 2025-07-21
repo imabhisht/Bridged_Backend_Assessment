@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUrl } from "class-validator";
+import { IsOptional, IsString, IsUrl, IsDateString } from "class-validator";
 
 export class CreateLinkDto {
   @IsUrl()
@@ -9,6 +9,6 @@ export class CreateLinkDto {
   customShortCode?: string;
 
   @IsOptional()
-  @IsString()
+  @IsDateString()
   expiresAt?: string;
 }

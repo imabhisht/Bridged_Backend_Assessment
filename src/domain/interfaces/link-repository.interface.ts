@@ -5,4 +5,5 @@ export interface LinkRepository {
   findByShortCode(shortCode: string): Promise<Link | null>;
   findByUserId(userId: string): Promise<Link[]>;
   findAll(): Promise<Link[]>;
+  delete(shortCode: string): Promise<void>;
 }

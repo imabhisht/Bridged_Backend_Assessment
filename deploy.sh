@@ -26,11 +26,11 @@ docker compose ps
 echo "Testing load balancer..."
 for i in {1..5}; do
     echo "Request $i:"
-    curl -s http://localhost/health | jq .
+    curl -s http://localhost:3500/health | jq .
     sleep 1
 done
 
 echo "Deployment completed!"
 echo "Application is available at: http://localhost"
-echo "Health check endpoint: http://localhost/health"
-echo "Nginx health check: http://localhost/nginx-health"
+echo "Health check endpoint: http://localhost:3500/health"
+echo "Nginx health check: http://localhost:3500/nginx-health"

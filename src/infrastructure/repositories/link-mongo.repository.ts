@@ -148,4 +148,8 @@ export class LinkMongoRepository implements LinkRepository {
         )
     );
   }
+
+  async delete(shortCode: string): Promise<void> {
+    await this.linkModel.deleteOne({ shortCode }).exec();
+  }
 }

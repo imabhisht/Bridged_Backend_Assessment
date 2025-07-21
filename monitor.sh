@@ -12,7 +12,7 @@ while true; do
     echo "=== Load Balancer Test ==="
     for i in {1..3}; do
         echo "Request $i:"
-        response=$(curl -s http://localhost/health 2>/dev/null)
+        response=$(curl -s http://localhost:3500/health 2>/dev/null)
         if [ $? -eq 0 ]; then
             echo $response | jq -r '.instance // "unknown"' 2>/dev/null || echo "Response: $response"
         else

@@ -38,8 +38,8 @@ The deployment consists of:
 ## Available Services
 
 - **Application**: http://localhost (load-balanced across 3 instances)
-- **Health Check**: http://localhost/health
-- **Nginx Health**: http://localhost/nginx-health
+- **Health Check**: http://localhost:3500/health
+- **Nginx Health**: http://localhost:3500/nginx-health
 - **MongoDB**: localhost:27017
 - **Redis**: localhost:6379
 
@@ -129,7 +129,7 @@ Test that requests are distributed across instances:
 ```bash
 # Make multiple requests and observe different instance IDs
 for i in {1..10}; do
-    curl -s http://localhost/health | jq -r '.instance'
+    curl -s http://localhost:3500/health | jq -r '.instance'
 done
 ```
 

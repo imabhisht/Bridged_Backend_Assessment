@@ -38,4 +38,8 @@ export class RedisService implements CacheService {
       await this.client.set(key, value);
     }
   }
+
+  async delete(key: string): Promise<void> {
+    await this.client.del(key);
+  }
 }

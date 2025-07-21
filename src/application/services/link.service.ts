@@ -20,11 +20,20 @@ export class LinkService {
       throw new BadRequestException("Short code already exists");
     }
 
+    // Validate expiration date if provided
+    let expiresAt: Date | undefined;
+    if (dto.expiresAt) {
+      expiresAt = new Date(dto.expiresAt);
+      if (expiresAt <= new Date()) {
+        throw new BadRequestException("Expiration date must be in the future");
+      }
+    }
+
     const link = new Link(
       shortCode,
       dto.longUrl,
       userId,
-      dto.expiresAt ? new Date(dto.expiresAt) : undefined
+      expiresAt
     );
     await this.linkRepository.create(link);
     await this.cacheService.set(`link:${shortCode}`, dto.longUrl, 3600); // Cache for 1 hour
@@ -50,5 +59,20 @@ export class LinkService {
 
   async findAll(): Promise<Link[]> {
     return this.linkRepository.findAll();
+  }
+
+  async deleteLink(shortCode: string, userId?: string): Promise<void> {
+    const link = await this.linkRepository.findByShortCode(shortCode);
+    if (!link) {
+      throw new BadRequestException("Link not found");
+    }
+
+    // If userId is provided, ensure the user owns the link
+    if (userId && link.userId !== userId) {
+      throw new BadRequestException("You can only delete your own links");
+    }
+
+    await this.linkRepository.delete(shortCode);
+    await this.cacheService.delete(`link:${shortCode}`);
   }
 }
