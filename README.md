@@ -43,6 +43,12 @@ High Level Architecture Diagram
 | `data_received`         | **20 MB**               | ✅ Your app handled real traffic load                                                 |
 | `data_sent`             | **1.3 MB**              | ✅ Network impact was minimal                                                         |
 
+## Video Presentation
+
+[![](https://drive.google.com/uc?export=download&id=1PJQDNOEN9UiqssaCN6qgTiTp78DT3_pF)](https://drive.google.com/uc?export=download&id=1PJQDNOEN9UiqssaCN6qgTiTp78DT3_pF)
+
+ - A brief overview of the project, its architecture, and performance testing results.
+
 ## In The Project
 
 | SR | Modules | Status |
