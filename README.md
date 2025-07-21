@@ -9,7 +9,7 @@ The implementation includes all core requirements and bonus features, such as a 
 
 The Project is already deployed on: **https://bridged.imabhisht.com**
 
-You can see the postman collection [here](./docs/postman.json)
+You can see the postman collection [here](https://www.postman.com/imabhisht/bridged-media)
 
 ## How to Run the Project (Locally)
 
