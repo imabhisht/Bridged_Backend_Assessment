@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { LinkService } from "../../src/application/services/link.service";
 import { LinkRepository } from "../../src/domain/interfaces/link-repository.interface";
 import { CacheService } from "../../src/domain/interfaces/cache-service.interface";
+import { RedisService } from "../../src/infrastructure/cache/redis.service";
 
 describe("LinkService", () => {
   let service: LinkService;
