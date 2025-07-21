@@ -17,6 +17,8 @@ import { UserSchema } from "./infrastructure/database/schemas/user.schema";
 import { UserMongoRepository } from "./infrastructure/repositories/user-mongo.repository";
 import { AuthService } from "./application/services/auth.service";
 import { AdminController } from "./presentation/controllers/admin.controller";
+import { AnalyticsQueue } from "./infrastructure/queue/analytics.queue";
+import { AnalyticsProcessor } from "./infrastructure/queue/analytics.processor";
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { AdminController } from "./presentation/controllers/admin.controller";
     { provide: "CacheService", useClass: RedisService },
     { provide: "UserRepository", useClass: UserMongoRepository },
     JwtStrategy,
+    AnalyticsQueue,
+    AnalyticsProcessor,
   ],
 })
 export class AppModule {}

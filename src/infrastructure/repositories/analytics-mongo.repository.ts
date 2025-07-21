@@ -11,7 +11,18 @@ export class AnalyticsMongoRepository implements AnalyticsRepository {
     @InjectModel("Analytics") private analyticsModel: Model<AnalyticsDocument>
   ) {}
 
-  async logHit(analytics: Analytics): Promise<void> {
+  async logHit(analytics: Analytics | any): Promise<void> {
+    // If not an instance of Analytics, convert
+    if (!(analytics instanceof Analytics)) {
+      analytics = new Analytics(
+        analytics.shortCode,
+        analytics.timestamp ? new Date(analytics.timestamp) : new Date(),
+        analytics.referrer,
+        analytics.ipAddress,
+        analytics.country,
+        analytics.userAgent
+      );
+    }
     await this.analyticsModel.create(analytics);
   }
 
