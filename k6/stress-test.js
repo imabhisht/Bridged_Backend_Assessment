@@ -3,10 +3,10 @@ import { sleep } from 'k6';
 
 export const options = {
     vus: 100, // 100 virtual users
-    duration: '30s', // Run for 30 seconds
+    duration: '150s', // Run for 30 seconds
 };
 
 export default function () {
-    http.get('http://localhost:3005/mycode');
+    http.get('http://localhost/mycode');
     sleep(1);
 }

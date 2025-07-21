@@ -43,7 +43,7 @@ coverage/
 
 # Builds for Docker
 Dockerfile.build
-docker-compose.build.yml
+docker compose.build.yml
 
 # OS metadata
 .DS_Store
