@@ -5,7 +5,7 @@ This project is a scalable, production-ready Link Tracker API built for the Brid
 
 The implementation includes all core requirements and bonus features, such as a JWT-based user system, rate limiting, link expiration, and an admin endpoint. The codebase follows the Onion architecture, ensuring clean separation of concerns, modularity, and maintainability.
 
-![alt text](./docs/image.png)
+![High Level Architecture Diagram: Shows the flow between User, API Server (NestJS), Redis, BullMQ Queue, Worker Node, and MongoDB. The diagram illustrates how requests are processed, cached, redirected, and analytics are asynchronously logged.](./docs/image.png)
 High Level Architecture Diagram  
 
 ## Performance Benchmarks
@@ -29,6 +29,30 @@ High Level Architecture Diagram
 | `data_received`         | **20 MB**               | ✅ Your app handled real traffic load                                                 |
 | `data_sent`             | **1.3 MB**              | ✅ Network impact was minimal                                                         |
 
+## In The Project
+
+| SR | Modules | Status |
+|----|---------|--------|
+| 1 | Short Link Creation (POST /shorten) | ✅ |
+| 2 | Redirect Handler (GET /:shortCode) | ✅ |
+| 3 | Analytics Endpoint (GET /:shortCode/stats) | ✅ |
+| 4 | Custom Short Codes | ✅ |
+| 5 | JWT-based User System | ✅ |
+| 6 | Rate Limiting per IP/User | ✅ |
+| 7 | Link Expiration Dates | ✅ |
+| 8 | Admin Endpoint (GET /admin/links) | ✅ |
+| 9 | Redis Caching | ✅ |
+| 10 | MongoDB Schema and Index Optimization | ✅ |
+| 11 | Stress Testing with k6 | ✅ |
+| 12 | Unit Tests with Jest | ✅ |
+| 13 | API Documentation (PostMan) | ✅ |
+| 14 | Pagination for Admin Endpoint | ✅ |
+| 15 | Error Handling & Logging | ✅ |
+| 16 | Middleware Architecture (Onion) | ✅ |
+| 17 | Environment Configuration | ✅ |
+| 18 | Health Check Endpoints | ✅ |
+| 19 | Connection Pooling | ✅ |
+| 20 | Async Analytics Processing (BullMQ) | ✅ |
 
 ## Table of Contents
 - [Architecture](#architecture)
@@ -86,7 +110,10 @@ To ensure the application can handle high traffic (10,000+ requests) and maintai
 - **Asynchronous Processing**:
   - Analytics logging is offloaded to a BullMQ queue (`AnalyticsQueue`, `AnalyticsProcessor`) to prevent blocking the main thread during high-traffic redirect requests.
   - The queue uses Redis as its backend for reliable job processing and scalability.
+  
 
+![High Level Architecture Diagram: Shows the flow between User, API Server (NestJS), Redis, BullMQ Queue, Worker Node, and MongoDB. The diagram illustrates how requests are processed, cached, redirected, and analytics are asynchronously logged.](./docs/image2.png)
+Redis Asynchronous Processing Flow
 
 ```mermaid
 sequenceDiagram
@@ -119,6 +146,11 @@ sequenceDiagram
 - **Performance Monitoring**:
   - The `MongoHealthService` monitors connection pool stats, latency, and operation metrics to detect bottlenecks and ensure database health.
   - Logging is implemented using NestJS's `Logger` to track connection events and errors.
+
+- **Connection Pooling**:
+  - The application uses connection pooling to manage concurrent database connections efficiently.
+  - The connection pool is configured to handle high-volume scenarios with a maximum of 100 connections.
+  - The connection pool is configured to handle high-volume scenarios with a maximum of 100 connections.
 
 ### Durability
 - **MongoDB Write Concern**:
@@ -406,12 +438,10 @@ sequenceDiagram
   - Logging ensures traceability of performance issues.
 
 ## Submission
-The code is hosted on [GitHub/GitLab link] and adheres to all evaluation criteria:
+   The code is hosted on [[GitHub](https://github.com/imabhisht/Bridged_Backend_Assessment.git)] and adheres to all evaluation criteria:
 - **Code Quality**: Clean, modular, and follows Onion architecture.
 - **Database Design**: Efficient MongoDB schemas with optimized indexes.
 - **Traffic Handling**: Caching, async processing, and connection pooling for high concurrency.
 - **Testing**: Jest unit tests and k6 stress test support.
 - **Documentation**: This README provides clear setup, testing, and scalability notes.
 - **Scalability Thinking**: Detailed strategies for handling 10,000+ requests with durability.
-
-For any questions or further details, please contact me by July 21, 2025.
