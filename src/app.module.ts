@@ -13,6 +13,7 @@ import { LinkSchema } from "./infrastructure/database/schemas/link.schema";
 import { AnalyticsSchema } from "./infrastructure/database/schemas/analytics.schema";
 import { RateLimiterMiddleware } from "./infrastructure/middleware/rate-limiter.middleware";
 import { JwtStrategy } from "./common/strategies/jwt.strategy";
+import { AdminGuard } from "./common/guards/admin.guard";
 import { UserSchema } from "./infrastructure/database/schemas/user.schema";
 import { UserMongoRepository } from "./infrastructure/repositories/user-mongo.repository";
 import { AuthService } from "./application/services/auth.service";
@@ -42,6 +43,7 @@ import { MongoHealthService } from "./infrastructure/database/mongo-health.servi
     { provide: "CacheService", useClass: RedisService },
     { provide: "UserRepository", useClass: UserMongoRepository },
     JwtStrategy,
+    AdminGuard,
     AnalyticsQueue,
     AnalyticsProcessor,
     MongoHealthService,
