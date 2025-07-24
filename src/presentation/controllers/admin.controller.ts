@@ -2,12 +2,14 @@ import { Controller, Get, UseGuards, Delete, Param, Query } from "@nestjs/common
 import { LinkService } from "../../application/services/link.service";
 import { AnalyticsService } from "../../application/services/analytics.service";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard";
+import { MongoHealthService } from "../../infrastructure/database/mongo-health.service";
 
 @Controller("admin")
 export class AdminController {
   constructor(
     private readonly linkService: LinkService,
-    private readonly analyticsService: AnalyticsService
+    private readonly analyticsService: AnalyticsService,
+    private readonly mongoHealthService: MongoHealthService
   ) {}
 
   @Get("links")
@@ -72,5 +74,17 @@ export class AdminController {
   async deleteLink(@Param("shortCode") shortCode: string) {
     await this.linkService.deleteLink(shortCode); // Admin can delete any link
     return { message: "Link deleted successfully" };
+  }
+
+  @Get("mongodb-stats")
+  @UseGuards(JwtAuthGuard)
+  async getMongoDbStats() {
+    const healthStatus = await this.mongoHealthService.getHealthStatus();
+    const performanceMetrics = await this.mongoHealthService.getPerformanceMetrics();
+    
+    return {
+      health: healthStatus,
+      performance: performanceMetrics
+    };
   }
 }

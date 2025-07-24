@@ -38,6 +38,7 @@
 	},
 	"scripts": {
 		"start": "ts-node --compiler-options '{\"module\":\"commonjs\"}' src/main.ts",
+		"dev": "nodemon",
 		"stress-test": "k6 run k6/stress-test.js",
 		"docker:build": "docker compose build",
 		"docker:up": "docker compose up -d",
